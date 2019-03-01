@@ -26,6 +26,7 @@ const {
   BRIDGEABLE_TOKEN_NAME,
   BRIDGEABLE_TOKEN_SYMBOL,
   BRIDGEABLE_TOKEN_DECIMALS,
+  BRIDGEABLE_TOKEN_ADDRESS,
   HOME_DAILY_LIMIT,
   HOME_MAX_AMOUNT_PER_TX
 } = env
@@ -38,14 +39,51 @@ async function deployForeign() {
   console.log('deploying ForeignBridge')
   console.log('========================================\n')
 
-  console.log('\n[Foreign] deploying BRIDGEABLE_TOKEN_SYMBOL token')
-  const erc677bridgeToken = await deployContract(
-    ERC677BridgeToken,
-    [BRIDGEABLE_TOKEN_NAME, BRIDGEABLE_TOKEN_SYMBOL, BRIDGEABLE_TOKEN_DECIMALS],
-    { from: DEPLOYMENT_ACCOUNT_ADDRESS, network: 'foreign', nonce: foreignNonce }
-  )
-  foreignNonce++
-  console.log('[Foreign] BRIDGEABLE_TOKEN_SYMBOL: ', erc677bridgeToken.options.address)
+  const erc677bridgeTokenExists = Web3Utils.isAddress(BRIDGEABLE_TOKEN_ADDRESS)
+  let erc677bridgeToken = null
+
+  if (erc677bridgeTokenExists) {
+
+    const abi = ERC677BridgeToken.abi.concat([
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "newOwner",
+            "type": "address"
+          }
+        ],
+        "name": "proposeOwnership",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [],
+        "name": "acceptOwnership",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ])
+    erc677bridgeToken = new web3Foreign.eth.Contract(abi, BRIDGEABLE_TOKEN_ADDRESS)
+    console.log('[Foreign] BRIDGEABLE_TOKEN_SYMBOL: ', erc677bridgeToken.options.address)
+    
+  } else {
+
+    console.log('\n[Foreign] deploying BRIDGEABLE_TOKEN_SYMBOL token')
+    erc677bridgeToken = await deployContract(
+      ERC677BridgeToken,
+      [BRIDGEABLE_TOKEN_NAME, BRIDGEABLE_TOKEN_SYMBOL, BRIDGEABLE_TOKEN_DECIMALS],
+      { from: DEPLOYMENT_ACCOUNT_ADDRESS, network: 'foreign', nonce: foreignNonce }
+    )
+    foreignNonce++
+    console.log('[Foreign] BRIDGEABLE_TOKEN_SYMBOL: ', erc677bridgeToken.options.address)
+    
+  }
 
   console.log('deploying storage for foreign validators')
   const storageValidatorsForeign = await deployContract(EternalStorageProxy, [], {
@@ -212,19 +250,23 @@ async function deployForeign() {
   assert.strictEqual(Web3Utils.hexToNumber(setBridgeContract.status), 1, 'Transaction Failed')
   foreignNonce++
 
-  console.log('transferring ownership of ERC677BridgeToken token to foreignBridge contract')
-  const txOwnershipData = await erc677bridgeToken.methods
-    .transferOwnership(foreignBridgeStorage.options.address)
-    .encodeABI({ from: DEPLOYMENT_ACCOUNT_ADDRESS })
-  const txOwnership = await sendRawTxForeign({
-    data: txOwnershipData,
-    nonce: foreignNonce,
-    to: erc677bridgeToken.options.address,
-    privateKey: deploymentPrivateKey,
-    url: FOREIGN_RPC_URL
-  })
-  assert.strictEqual(Web3Utils.hexToNumber(txOwnership.status), 1, 'Transaction Failed')
-  foreignNonce++
+  if (!erc677bridgeTokenExists) {
+
+    console.log('propose ownership of ERC677BridgeToken token to foreignBridge contract')
+    const txOwnershipData = await erc677bridgeToken.methods
+      .transferOwnership(foreignBridgeStorage.options.address)
+      .encodeABI({ from: DEPLOYMENT_ACCOUNT_ADDRESS })
+    const txOwnership = await sendRawTxForeign({
+      data: txOwnershipData,
+      nonce: foreignNonce,
+      to: erc677bridgeToken.options.address,
+      privateKey: deploymentPrivateKey,
+      url: FOREIGN_RPC_URL
+    })
+    assert.strictEqual(Web3Utils.hexToNumber(txOwnership.status), 1, 'Transaction Failed')
+    foreignNonce++
+    
+  }
 
   const bridgeOwnershipData = await foreignBridgeStorage.methods
     .transferProxyOwnership(FOREIGN_UPGRADEABLE_ADMIN)
