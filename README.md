@@ -10,6 +10,12 @@ To deploy smart contracts over existing ERC677 Bridge token it is necessary to c
 
 File [papyrus/papyrus-bridge-contracts.env](papyrus/papyrus-bridge-contracts.env) itself contains comments to each variable all of them are also explaned in [POA Bridge documentation](https://github.com/poanetwork/poa-bridge-contracts/blob/2.2.0/README.md). Only new added variable is `BRIDGEABLE_TOKEN_ADDRESS`. It should contain valid address of deployed ERC677 Bridge token.
 
+To deploy bridge smart contracts just run script [papyrus/deploy-contracts.sh](papyrus/deploy-contracts.sh):
+
+```sh
+papyrus/deploy-contracts.sh
+```
+
 As result of deployment `output/deploy-result.json` file will be created. Values from this file should be used to configure Papyrus Bridge services and web dApp.
 
 When bridge contract is deployed to home network (Papyrus Network) it necessary to send to it PPR coins with amount equal amount of currently minted existing ERC677 Bridge token (1,000,000,000 in case of PPR). These native coins will be frozen on bridge smart contract until exchange to existing ERC677 Bridge token.
