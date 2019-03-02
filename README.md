@@ -1,4 +1,4 @@
-# Papyrus Bridge Smart Contracts
+# Papyrus Token Bridge Smart Contracts
 
 This repository is a fork of [POA Bridge Smart Contracts v2.2.0](https://github.com/poanetwork/poa-bridge-contracts/tree/2.2.0). Is has some minor imprevements to deploy `NATIVE-TO-ERC` type of POA Bridge over existing special ERC677 Bridge token in foreign network.
 
