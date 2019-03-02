@@ -44,32 +44,7 @@ async function deployForeign() {
 
   if (erc677bridgeTokenExists) {
 
-    const abi = ERC677BridgeToken.abi.concat([
-      {
-        "constant": false,
-        "inputs": [
-          {
-            "name": "newOwner",
-            "type": "address"
-          }
-        ],
-        "name": "proposeOwnership",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "constant": false,
-        "inputs": [],
-        "name": "acceptOwnership",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }
-    ])
-    erc677bridgeToken = new web3Foreign.eth.Contract(abi, BRIDGEABLE_TOKEN_ADDRESS)
+    erc677bridgeToken = new web3Foreign.eth.Contract(ERC677BridgeToken.abi, BRIDGEABLE_TOKEN_ADDRESS)
     console.log('[Foreign] BRIDGEABLE_TOKEN_SYMBOL: ', erc677bridgeToken.options.address)
     
   } else {
