@@ -14,6 +14,7 @@ const VALIDATORS = env.VALIDATORS.split(' ')
 const {
   DEPLOYMENT_ACCOUNT_PRIVATE_KEY,
   REQUIRED_NUMBER_OF_VALIDATORS,
+  HOME_BRIDGE_INITIAL_BALANCE,
   HOME_GAS_PRICE,
   HOME_BRIDGE_OWNER,
   HOME_VALIDATORS_OWNER,
@@ -95,6 +96,7 @@ async function deployHome() {
   console.log('\ndeploying homeBridge storage\n')
   const homeBridgeStorage = await deployContract(EternalStorageProxy, [], {
     from: DEPLOYMENT_ACCOUNT_ADDRESS,
+    value: HOME_BRIDGE_INITIAL_BALANCE,
     nonce: homeNonce
   })
   homeNonce++

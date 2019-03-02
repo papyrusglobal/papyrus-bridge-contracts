@@ -15,7 +15,7 @@ const {
   GET_RECEIPT_INTERVAL_IN_MILLISECONDS
 } = require('./web3')
 
-async function deployContract(contractJson, args, { from, network, nonce }) {
+async function deployContract(contractJson, args, { from, value, network, nonce }) {
   let web3
   let url
   let gasPrice
@@ -43,6 +43,7 @@ async function deployContract(contractJson, args, { from, network, nonce }) {
     nonce: Web3Utils.toHex(nonce),
     to: null,
     privateKey: deploymentPrivateKey,
+    value: value ? Web3Utils.toHex(value) : null,
     url,
     gasPrice
   })

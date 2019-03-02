@@ -21,7 +21,6 @@ contract BasicBridge is EternalStorage, Validatable, Ownable, OwnedUpgradeabilit
     }
 
     function setGasPrice(uint256 _gasPrice) public onlyOwner {
-        require(_gasPrice > 0);
         uintStorage[keccak256(abi.encodePacked("gasPrice"))] = _gasPrice;
         emit GasPriceChanged(_gasPrice);
     }
