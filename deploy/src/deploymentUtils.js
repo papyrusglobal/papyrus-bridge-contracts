@@ -110,6 +110,7 @@ async function sendNodeRequest(url, method, signedData) {
     })
   })
   const json = await request.json()
+  console.log(method, json);
   if (method === 'eth_sendRawTransaction') {
     assert.strictEqual(json.result.length, 66, `Tx wasn't sent ${json}`)
   }
