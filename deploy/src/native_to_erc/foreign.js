@@ -211,35 +211,39 @@ async function deployForeign() {
   assert.strictEqual(Web3Utils.hexToNumber(txInitializeBridge.status), 1, 'Transaction Failed')
   foreignNonce++
 
-  console.log('\nset bridge contract on ERC677BridgeToken')
-  const setBridgeContractData = await erc677bridgeToken.methods
-    .setBridgeContract(foreignBridgeStorage.options.address)
-    .encodeABI({ from: DEPLOYMENT_ACCOUNT_ADDRESS })
-  const setBridgeContract = await sendRawTxForeign({
-    data: setBridgeContractData,
-    nonce: foreignNonce,
-    to: erc677bridgeToken.options.address,
-    privateKey: deploymentPrivateKey,
-    url: FOREIGN_RPC_URL
-  })
-  assert.strictEqual(Web3Utils.hexToNumber(setBridgeContract.status), 1, 'Transaction Failed')
-  foreignNonce++
+  /// Will do it manually!
+  ///
+  // console.log('\nset bridge contract on ERC677BridgeToken')
+  // const setBridgeContractData = await erc677bridgeToken.methods
+  //   .setBridgeContract(foreignBridgeStorage.options.address)
+  //   .encodeABI({ from: DEPLOYMENT_ACCOUNT_ADDRESS })
+  // const setBridgeContract = await sendRawTxForeign({
+  //   data: setBridgeContractData,
+  //   nonce: foreignNonce,
+  //   to: erc677bridgeToken.options.address,
+  //   privateKey: deploymentPrivateKey,
+  //   url: FOREIGN_RPC_URL
+  // })
+  // assert.strictEqual(Web3Utils.hexToNumber(setBridgeContract.status), 1, 'Transaction Failed')
+  // foreignNonce++
 
   if (!erc677bridgeTokenExists) {
 
-    console.log('propose ownership of ERC677BridgeToken token to foreignBridge contract')
-    const txOwnershipData = await erc677bridgeToken.methods
-      .transferOwnership(foreignBridgeStorage.options.address)
-      .encodeABI({ from: DEPLOYMENT_ACCOUNT_ADDRESS })
-    const txOwnership = await sendRawTxForeign({
-      data: txOwnershipData,
-      nonce: foreignNonce,
-      to: erc677bridgeToken.options.address,
-      privateKey: deploymentPrivateKey,
-      url: FOREIGN_RPC_URL
-    })
-    assert.strictEqual(Web3Utils.hexToNumber(txOwnership.status), 1, 'Transaction Failed')
-    foreignNonce++
+    /// No need to transfer ownership - 'setBridgeContract' should be enough.
+    ///
+    // console.log('propose ownership of ERC677BridgeToken token to foreignBridge contract')
+    // const txOwnershipData = await erc677bridgeToken.methods
+    //   .transferOwnership(foreignBridgeStorage.options.address)
+    //   .encodeABI({ from: DEPLOYMENT_ACCOUNT_ADDRESS })
+    // const txOwnership = await sendRawTxForeign({
+    //   data: txOwnershipData,
+    //   nonce: foreignNonce,
+    //   to: erc677bridgeToken.options.address,
+    //   privateKey: deploymentPrivateKey,
+    //   url: FOREIGN_RPC_URL
+    // })
+    // assert.strictEqual(Web3Utils.hexToNumber(txOwnership.status), 1, 'Transaction Failed')
+    // foreignNonce++
     
   }
 
